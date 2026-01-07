@@ -7,7 +7,6 @@ const helpRoutes = require("./routes/helpRoutes");
 const donationRoutes = require("./routes/donationRoutes");
 const contactRoutes = require("./routes/contactRoutes");
 
-
 const app = express();
 
 // Middleware
@@ -19,7 +18,6 @@ app.use("/api/help", helpRoutes);
 app.use("/api/donations", donationRoutes);
 app.use("/api/contact", contactRoutes);
 
-
 // Test route
 app.get("/", (req, res) => {
   res.send("WarmHands backend is running");
@@ -30,10 +28,10 @@ mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
     console.log("MongoDB connected");
-    app.listen(5000, () => {
-      console.log("Server running on port 5000");
-    });
   })
   .catch((err) => {
     console.error("MongoDB connection failed:", err.message);
   });
+
+// Export app for Vercel (IMPORTANT)
+module.exports = app;
