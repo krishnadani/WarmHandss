@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 function CauseStory({ story, onBack }) {
+  const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:5000";
   const [amount, setAmount] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
@@ -13,9 +14,7 @@ function CauseStory({ story, onBack }) {
 
     try {
       // 1. Create Razorpay order from backend
-      const orderRes = await fetch(
-        "http://localhost:5000/api/donations/order",
-        {
+      const orderRes = await fetch(`${API_BASE}/api/donations/order`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -36,9 +35,7 @@ function CauseStory({ story, onBack }) {
         order_id: orderData.id,
         handler: async function (response) {
           try {
-            const verifyRes = await fetch(
-              "http://localhost:5000/api/donations/verify",
-              {
+            const verifyRes = await fetch(`${API_BASE}/api/donations/verify`, {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
