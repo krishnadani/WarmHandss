@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 function ContactUs({ onBack }) {
+  const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:5000";
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -18,7 +19,7 @@ function ContactUs({ onBack }) {
     }
 
     try {
-      const res = await fetch("http://localhost:5000/api/contact", {
+      const res = await fetch(`${API_BASE}/api/contact`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
