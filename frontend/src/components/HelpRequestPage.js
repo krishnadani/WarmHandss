@@ -58,7 +58,10 @@ function HelpRequestPage({ onBack }) {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to submit request");
+        const text = await response.text().catch(() => "");
+        console.error("Help request failed:", response.status, text);
+        alert("Something went wrong. Please try again.");
+        return;
       }
 
       setSuccess(true);
@@ -71,7 +74,7 @@ function HelpRequestPage({ onBack }) {
 
       setTimeout(() => setSuccess(false), 3000);
     } catch (error) {
-      console.error(error);
+      console.error("Help request exception:", error);
       alert("Something went wrong. Please try again.");
     }
   };

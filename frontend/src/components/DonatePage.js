@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 function DonatePage({ onBack }) {
-  const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:5000";
+  const API_BASE = (process.env.REACT_APP_API_URL || "http://localhost:5000").replace(/\/$/, "");
   const [amount, setAmount] = useState("");
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
@@ -23,9 +23,22 @@ function DonatePage({ onBack }) {
         }
       );
 
+      if (!orderRes.ok) {
+        const text = await orderRes.text().catch(() => "");
+        console.error("Order creation failed:", orderRes.status, text);
+        setError("Payment initiation failed: unable to create order");
+        return;
+      }
+
       const orderData = await orderRes.json();
 
       // 2️⃣ Razorpay Checkout options
+      if (!process.env.REACT_APP_RAZORPAY_KEY_ID) {
+        console.error("Missing REACT_APP_RAZORPAY_KEY_ID");
+        setError("Payment initiation failed: payment key missing");
+        return;
+      }
+
       const options = {
         key: process.env.REACT_APP_RAZORPAY_KEY_ID,
         amount: orderData.amount,
@@ -51,11 +64,14 @@ function DonatePage({ onBack }) {
               }
             );
 
-            const data = await verifyRes.json();
-
             if (!verifyRes.ok) {
-              throw new Error(data.message);
+              const text = await verifyRes.text().catch(() => "");
+              console.error("Payment verify failed:", verifyRes.status, text);
+              setError("Payment verification failed");
+              return;
             }
+
+            const data = await verifyRes.json();
 
             setSuccess(true);
             setAmount("");
@@ -71,8 +87,22 @@ function DonatePage({ onBack }) {
       };
 
       // 4️⃣ Open Razorpay
+      // Ensure checkout script and window.Razorpay are available
+      if (!window.Razorpay) {
+        console.error("Razorpay script not loaded or blocked");
+        setError("Payment initiation failed: payment script unavailable");
+        return;
+      }
+
       const razorpay = new window.Razorpay(options);
-      razorpay.open();
+      // On some mobile browsers the popup may be blocked if not in a direct user gesture.
+      // We attempt to open checkout immediately — if it fails, log for diagnostics.
+      try {
+        razorpay.open();
+      } catch (openErr) {
+        console.error("Razorpay open error:", openErr);
+        setError("Payment initiation failed");
+      }
     } catch (err) {
       console.error(err);
       setError("Payment initiation failed");

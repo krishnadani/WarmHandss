@@ -28,7 +28,10 @@ function ContactUs({ onBack }) {
       });
 
       if (!res.ok) {
-        throw new Error("Failed to send message");
+        const text = await res.text().catch(() => "");
+        console.error("Contact submit failed:", res.status, text);
+        setError("Something went wrong. Please try again.");
+        return;
       }
 
       setSuccess(true);
@@ -41,7 +44,7 @@ function ContactUs({ onBack }) {
 
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
-      console.error(err);
+      console.error("Contact submit exception:", err);
       setError("Something went wrong. Please try again.");
     }
   };
