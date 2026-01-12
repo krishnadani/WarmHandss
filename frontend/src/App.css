@@ -147,3 +147,12 @@ body {
   background-color: #EEF6F8;
   padding: 4rem 0 2rem;
 }
+
+@media (max-width: 991px) {
+  .navbar-collapse {
+    background: #f0fdf4;
+    padding: 1rem;
+    border-radius: 12px;
+  }
+}
+
