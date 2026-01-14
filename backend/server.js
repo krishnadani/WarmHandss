@@ -9,39 +9,56 @@ const contactRoutes = require("./routes/contactRoutes");
 
 const app = express();
 
-// Middleware
-const FRONTEND_URL = process.env.FRONTEND_URL;
-if (process.env.NODE_ENV === "production" && FRONTEND_URL) {
-  app.use(cors({ origin: FRONTEND_URL }));
-} else {
-  app.use(cors());
-}
+/* =======================
+   MIDDLEWARE
+======================= */
+
+// ✅ Allow frontend + preview + mobile safely
+app.use(
+  cors({
+    origin: [
+      "https://warm-handss-ubgc.vercel.app", // production frontend
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 
-// Routes
+/* =======================
+   ROUTES
+======================= */
+
 app.use("/api/help", helpRoutes);
 app.use("/api/donations", donationRoutes);
 app.use("/api/contact", contactRoutes);
 
-// Test route
 app.get("/", (req, res) => {
   res.send("WarmHands backend is running");
 });
 
-// MongoDB connection and server start
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log("MongoDB connected");
+/* =======================
+   MONGODB CONNECTION
+======================= */
 
-    const PORT = process.env.PORT || 5000;
-    app.listen(PORT, "0.0.0.0", () => {
-      console.log("Server running on port", PORT);
+const MONGO_URI = process.env.MONGO_URI;
+
+if (!MONGO_URI) {
+  console.error("❌ MONGO_URI not found in environment variables");
+} else {
+  mongoose
+    .connect(MONGO_URI)
+    .then(() => {
+      console.log("✅ MongoDB connected successfully");
+    })
+    .catch((err) => {
+      console.error("❌ MongoDB connection failed:", err.message);
     });
-  })
-  .catch((err) => {
-    console.error("MongoDB connection failed:", err.message);
-  });
+}
 
-  module.exports = app;
+/* =======================
+   EXPORT FOR VERCEL
+======================= */
+
+module.exports = app;
