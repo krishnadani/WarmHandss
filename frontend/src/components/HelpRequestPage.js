@@ -1,7 +1,6 @@
 import { useState } from "react";
 
 function HelpRequestPage({ onBack }) {
-  const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:5000";
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -20,21 +19,12 @@ function HelpRequestPage({ onBack }) {
   const validate = () => {
     const newErrors = {};
 
-    if (!formData.name.trim()) {
-      newErrors.name = "Name is required";
-    }
-
-    if (!/^\d{10}$/.test(formData.phone)) {
+    if (!formData.name.trim()) newErrors.name = "Name is required";
+    if (!/^\d{10}$/.test(formData.phone))
       newErrors.phone = "Enter a valid 10-digit phone number";
-    }
-
-    if (!formData.reason) {
-      newErrors.reason = "Please select a reason for help";
-    }
-
-    if (!formData.details.trim()) {
+    if (!formData.reason) newErrors.reason = "Please select a reason for help";
+    if (!formData.details.trim())
       newErrors.details = "Please describe your situation";
-    }
 
     return newErrors;
   };
@@ -49,11 +39,9 @@ function HelpRequestPage({ onBack }) {
     }
 
     try {
-      const response = await fetch(`${API_BASE}/api/help`, {
+      const response = await fetch("/api/help", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
@@ -81,47 +69,33 @@ function HelpRequestPage({ onBack }) {
 
   return (
     <section className="container my-5 py-5">
-      {/* Back */}
-      <button
-        onClick={onBack}
-        className="btn mb-4"
-        style={{ color: "#16A34A" }}
-      >
+      <button onClick={onBack} className="btn mb-4" style={{ color: "#16A34A" }}>
         ← Back
       </button>
 
-      {/* Header */}
       <div className="text-center mb-4">
         <span
           className="px-3 py-1 rounded-pill fw-semibold"
-          style={{
-            backgroundColor: "#DCFCE7",
-            color: "#16A34A",
-            fontSize: "0.85rem",
-          }}
+          style={{ backgroundColor: "#DCFCE7", color: "#16A34A", fontSize: "0.85rem" }}
         >
           Request Help
         </span>
 
         <h2 className="fw-bold mt-4 display-6">Tell Us How We Can Help</h2>
-
         <p className="text-muted mt-3">
           Fill out this form and our team will review your request with care.
         </p>
       </div>
 
-      {/* Success */}
       {success && (
         <div className="alert alert-success text-center">
           ✅ Your request has been submitted successfully.
         </div>
       )}
 
-      {/* Form */}
       <form onSubmit={handleSubmit}>
         <div className="row justify-content-center">
           <div className="col-md-6">
-            {/* Name */}
             <input
               name="name"
               className="form-control mb-1"
@@ -129,11 +103,8 @@ function HelpRequestPage({ onBack }) {
               value={formData.name}
               onChange={handleChange}
             />
-            {errors.name && (
-              <small className="text-danger">{errors.name}</small>
-            )}
+            {errors.name && <small className="text-danger">{errors.name}</small>}
 
-            {/* Phone */}
             <input
               name="phone"
               className="form-control mb-1 mt-3"
@@ -141,11 +112,8 @@ function HelpRequestPage({ onBack }) {
               value={formData.phone}
               onChange={handleChange}
             />
-            {errors.phone && (
-              <small className="text-danger">{errors.phone}</small>
-            )}
+            {errors.phone && <small className="text-danger">{errors.phone}</small>}
 
-            {/* Reason */}
             <select
               name="reason"
               className="form-select mb-1 mt-3"
@@ -158,11 +126,8 @@ function HelpRequestPage({ onBack }) {
               <option value="Food & Essentials">Food & Essentials</option>
               <option value="Emergency Assistance">Emergency Assistance</option>
             </select>
-            {errors.reason && (
-              <small className="text-danger">{errors.reason}</small>
-            )}
+            {errors.reason && <small className="text-danger">{errors.reason}</small>}
 
-            {/* Details */}
             <textarea
               name="details"
               rows="4"
@@ -175,7 +140,6 @@ function HelpRequestPage({ onBack }) {
               <small className="text-danger">{errors.details}</small>
             )}
 
-            {/* Submit */}
             <button
               type="submit"
               className="btn text-white w-100 fw-semibold mt-4"
