@@ -1,7 +1,6 @@
 import { useState } from "react";
 
 function ContactUs({ onBack }) {
-  const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:5000";
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -19,7 +18,7 @@ function ContactUs({ onBack }) {
     }
 
     try {
-      const res = await fetch(`${API_BASE}/api/contact`, {
+      const res = await fetch("/api/contact", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -51,28 +50,14 @@ function ContactUs({ onBack }) {
 
   return (
     <section className="container my-5 py-5">
-      {/* Back */}
-      <button
-        onClick={onBack}
-        className="btn mb-4"
-        style={{ color: "#16A34A" }}
-      >
+      <button onClick={onBack} className="btn mb-4" style={{ color: "#16A34A" }}>
         ← Back
       </button>
 
       <h2 className="fw-bold mb-4">Contact Us</h2>
 
-      {success && (
-        <div className="alert alert-success">
-          ✅ Message sent successfully
-        </div>
-      )}
-
-      {error && (
-        <div className="alert alert-danger">
-          {error}
-        </div>
-      )}
+      {success && <div className="alert alert-success">✅ Message sent successfully</div>}
+      {error && <div className="alert alert-danger">{error}</div>}
 
       <form onSubmit={handleSubmit} style={{ maxWidth: "500px" }}>
         <input
